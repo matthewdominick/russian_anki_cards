@@ -3,8 +3,10 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-#input_filename = 'Lesson2_Page3_nouns.csv'
-input_filename = 'test_input.csv'
+#input_filename = 'Lesson2_Page4_nouns.csv'
+#input_filename = 'adjectives.csv'
+input_filename = 'inputs/verb_infinitives.csv'
+
 
 output_filename = 'output.csv' #note, this file gets deleted first if present.  
 audio_folder = '/audio/'
@@ -35,7 +37,7 @@ Requires the requests module/library
 def getBSPageTextObject(russian_word):
     url = 'https://en.openrussian.org/ru/' + str(russian_word)
     page = requests.get(url)
-    if page.status_code==200:
+    if page.status_code==200: #This is not working. The error page is a 200.  
         soup = BeautifulSoup(page.text, 'html.parser')
     else:
         soup = 'fail'
@@ -64,14 +66,15 @@ def getAudioURL(russian_word):
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-'''
-This 
-'''
+
 def checkIfRussianWordExists(soupText):
+    """
+    Check if word exists on openrussian.org
+    """	
     audioURL = soupText.find('audio').get('src')
     x=1
     x=0
-    if x==1:
+    if x==1:	
         return True
     else:
         return False
@@ -91,10 +94,11 @@ for words in russian_words:
     #print (russian_words[i]+","+englishTranslation+","+audioURL)
     print (russian_words[i]+","+englishTranslation)
     target.write(russian_words[i]+","+englishTranslation)
+    target.write(",[sound:"+russian_words[i]+".mp3]")
     target.write("\n")
     audioURl = 'https://en.openrussian.org/read/ru/'+russian_words[i]
     r = requests.get(audioURl)
-    #print (r.status_code)
+    print (r.status_code)
     if r.status_code==200:
         with open(russian_words[i]+'.mp3', 'wb') as f:  
             f.write(r.content)
